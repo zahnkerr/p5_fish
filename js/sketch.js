@@ -9,9 +9,15 @@ function setup() {
 
   for(var i = 0; i < numFish; i++) {
     var x = random(-40, width - 40);
+    //what is your goal here?
+    //you are mapping i between (0 - numFish) to (-100 - (height - 50))
+    //maybe my only confusion is the use of numFish (are you trying to create a grid still?)
     var y = map(i, 0, numFish, -100, height - 50);
+    //do you want the fish to be smaller in the background and larger in fore?
     var diameter = i * 3;
-    fishes[i] = new Fish(x, y, diameter);
+    //I would push back the new fish, instead of assigning it to the index
+    //OLD: fishes[i] = new Fish(x, y, diameter);
+    fishes.push(new Fish(x, y, diameter));
   }
 }
 
@@ -27,6 +33,7 @@ function Fish(tempX, tempY, tempDiameter) {
   this.x = tempX;
   this.y = tempY;
   this.diameter = tempDiameter;
+
   this.angle = random(0, TWO_PI);
   this.yoffset = 0.0;
   this.color = color(127, 46, 178);
@@ -37,11 +44,18 @@ function Fish(tempX, tempY, tempDiameter) {
   }
 
   this.display = function() {
-    //strokeWeight(1);
+    push();
+    stroke(this.color);
+
     ellipseMode(CENTER);
-    ellipse(this.x, this.y, this.diameter, this.diameter / 2);
-    //translate(this.x - 6.0, 0);
-    triangle(this.x - 50, this.y, this.x - 70, this.y - 20, this.x - 70, this.y + 20);
+    ellipse(this.x, this.y, this.diameter, this.diameter/2);
+
+    var attach = [this.x - (this.diameter / 2), this.y];
+    var tri_scale = this.diameter / 5;
+    
+    triangle(attach[0], attach[1], attach[0] - tri_scale, attach[1] - tri_scale, attach[0] - tri_scale, attach[1] + tri_scale);
+
+    pop();
   }
 }
 // function Fish(direction, position) {
