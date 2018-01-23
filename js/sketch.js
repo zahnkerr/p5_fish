@@ -38,6 +38,76 @@ function Fish(tempX, tempY, tempDiameter) {
   this.yoffset = 0.0;
   this.color = color(127, 46, 178);
 
+  this.rand = [
+    random(-1,1),
+    random(-1,1),
+    random(-1,1),
+    random(-1,1),
+    random(-1,1),
+    random(-1,1)
+  ];
+
+  this.generateBody = function(){
+    ellipseMode(CENTER);
+    ellipse(this.x, this.y, this.diameter, this.diameter/2);
+  }
+
+  this.generateTail = function(type){
+    var attach = [this.x - (this.diameter / 2), this.y];
+    var sc = this.diameter / 5;
+
+    switch(type){
+      case "triangle":
+        triangle(
+          attach[0],
+          attach[1],
+          attach[0] - sc,
+          attach[1] - sc,
+          attach[0] - sc,
+          attach[1] + sc
+        );
+        break;
+      case "curly":
+        noFill();
+
+        push();
+        bezier(
+          attach[0],
+          attach[1],
+          attach[0] + (this.rand[0] * this.diameter),
+          attach[1] + (this.rand[1] * this.diameter),
+          attach[0] + (this.rand[2] * this.diameter),
+          attach[1] + (this.rand[3] * this.diameter),
+          attach[0] + (this.rand[4] * this.diameter),
+          attach[1] + (this.rand[5] * this.diameter)
+        );
+
+        bezier(
+          attach[0],
+          attach[1],
+          attach[0] + (this.rand[0] * this.diameter),
+          attach[1] - (this.rand[1] * this.diameter),
+          attach[0] + (this.rand[2] * this.diameter),
+          attach[1] - (this.rand[3] * this.diameter),
+          attach[0] + (this.rand[4] * this.diameter),
+          attach[1] - (this.rand[5] * this.diameter)
+        );
+        pop();
+
+        break;
+      default:
+        triangle(
+          attach[0],
+          attach[1],
+          attach[0] - sc,
+          attach[1] - sc,
+          attach[0] - sc,
+          attach[1] + sc
+        );
+    }
+
+  }
+
   this.update = function() {
     this.angle += 0.05;
     this.yoffset = sin(this.angle) * 20;
@@ -47,13 +117,8 @@ function Fish(tempX, tempY, tempDiameter) {
     push();
     stroke(this.color);
 
-    ellipseMode(CENTER);
-    ellipse(this.x, this.y, this.diameter, this.diameter/2);
-
-    var attach = [this.x - (this.diameter / 2), this.y];
-    var tri_scale = this.diameter / 5;
-    
-    triangle(attach[0], attach[1], attach[0] - tri_scale, attach[1] - tri_scale, attach[0] - tri_scale, attach[1] + tri_scale);
+    this.generateBody();
+    this.generateTail("curly");
 
     pop();
   }
