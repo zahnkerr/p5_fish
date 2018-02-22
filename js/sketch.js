@@ -3,7 +3,7 @@ var fishes = [];
 
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
-
+  
   var numFish = 50;
 
   for(var i = 0; i < numFish; i++) {
@@ -25,16 +25,18 @@ function draw() {
 }
 
 function Fish(tempX, tempY, tempDiameter) {
+  const TAIL_TYPE_TRIANGLE = 0;
+  const TAIL_TYPE_BEZIER = 1;
+  
   this.x = tempX;
   this.y = tempY;
   this.diameter = tempDiameter;
   this.tail = Math.floor(random(2));
-  this.eye = Math.floor(random(2));
+  this.eye = FishEye(this, 'blue', FishEye.IRIS_NO_FILL);
 
   this.angle = random(0, TWO_PI);
   this.yoffset = 0.0;
-  this.color = color(127, 46, 178);
-
+  
   this.rand = [
     random(-1,1),
     random(-1,1),
@@ -49,69 +51,12 @@ function Fish(tempX, tempY, tempDiameter) {
     ellipse(this.x, this.y, this.diameter, this.diameter/2);
   }
 
-  this.generateEye = function(type){
-    var sc = this.diameter / 10;
-    var attach = [this.x + (this.diameter / 2) - (sc), this.y - (sc)];
-    var angle = TWO_PI/16;
-    // var w = 50;
-    // var offset = 35;
-
-    switch(type) {
-      case 0:
-        push();
-        //translate(attach[0], attach[1] + sc/2);
-        fill('gold');
-        ellipse(attach[0] - sc, attach[1] + sc/2, 2 * sc, 2 * sc);
-        fill('gold');
-        ellipse(attach[0] - sc, attach[1] + sc/2, 1.75 * sc, 1.75 * sc);
-        // for (var i = 0; i < 16; i++) {
-        //   line(-(attach[0] - sc), -(attach[0] - sc), attach[1] + sc/2, attach[1] + sc/2);
-        //   rotate(angle);
-        // }
-        pop();
-        fill('black');
-        ellipse(attach[0] - sc, attach[1] + sc/2, sc, sc);
-
-        console.log("This is 0: " + attach[0]);
-        console.log("This is 1: " + attach[1]);
-        // function eye() {
-        //   var w = 50;
-        //   push();
-        //   translate(width/2, height/2);
-        //   ellipse(0, 0, w);
-        //   ellipse(0, 0, w - 5);
-        //   var angle = TWO_PI/16;
-        //   var offset = 35;
-        //   for (var i = 0; i < 16; i++) {
-        //     line(-(w - offset), -(w - offset), w - offset, w - offset);
-        //     rotate(angle);
-        //   }
-        //   pop();
-        //   fill(0);
-        //   ellipse(0, 0, 10);
-        // }
-
-
-        break;
-      case 1:
-        fill('silver');
-        ellipse(attach[0] - sc, attach[1] + sc/2, 2 * sc, 2 * sc);
-        fill('silver');
-        ellipse(attach[0] - sc, attach[1] + sc/2, 1.75 * sc, 1.75 * sc);
-        fill('black');
-        ellipse(attach[0] - sc, attach[1] + sc/2, sc, sc);
-        break;
-      default:
-        ellipse(attach[0], attach[1], sc, sc);
-    }
-  }
-
   this.generateTail = function(type){
     var attach = [this.x - (this.diameter / 2), this.y];
     var sc = this.diameter / 5;
 
     switch(type){
-      case 0:
+      case TAIL_TYPE_TRIANGLE:
         triangle(
           attach[0],
           attach[1],
@@ -121,7 +66,7 @@ function Fish(tempX, tempY, tempDiameter) {
           attach[1] + sc
         );
         break;
-      case 1:
+      case TAIL_TYPE_BEZIER:
         //noFill();
 
         push();
@@ -173,11 +118,52 @@ function Fish(tempX, tempY, tempDiameter) {
 
     this.generateTail(this.tail);
     this.generateBody();
-    this.generateEye(this.eye);
+    this.eye.draw();
 
     pop();
   }
 }
+
+function FishEye(fish, eyeColor, irisType) {
+  const IRIS_NO_FILL = 0;
+  const IRIS_LINES = 1;
+  const IRIS_ELLIPSES = 2;
+  
+  this.fish = fish;
+  this.color = eyeColor;
+  this.irisType = irisType;
+  
+  this.draw = function(type){
+    var sc = this.diameter / 10;
+    var attach = [this.fish.x + (this.fish.diameter / 2) - (sc), this.fish.y - (sc)];
+    var angle = TWO_PI/16;
+    // var w = 50;
+    // var offset = 35;
+
+    fill(this.color);
+    ellipse(attach[0] - sc, attach[1] + sc/2, 2 * sc, 2 * sc);
+    fill(this.color);
+    ellipse(attach[0] - sc, attach[1] + sc/2, 1.75 * sc, 1.75 * sc);
+    fill('black');
+    ellipse(attach[0] - sc, attach[1] + sc/2, sc, sc);    
+  }
+  
+  // var w = 50;
+  // push();
+  // translate(width/2, height/2);
+  // ellipse(0, 0, w);
+  // ellipse(0, 0, w - 5);
+  // var angle = TWO_PI/16;
+  // var offset = 35;
+  // for (var i = 0; i < 16; i++) {
+  //   line(-(w - offset), -(w - offset), w - offset, w - offset);
+  //   rotate(angle);
+  // }
+  // pop();
+  // fill(0);
+  // ellipse(0, 0, 10);
+}
+
 //nice scales with this function
 // function setup() {
 //   createCanvas(innerWidth, innerHeight);
